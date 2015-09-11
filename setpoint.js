@@ -34,7 +34,7 @@ S.m_ratio = SP.Mratio(); 		//monitor aspect Satio!
 	var S = {};
 	window.S = S;			//set S global
 	S.ua = navigator.userAgent.toLowerCase(); 	//global user agent info to lower case for fast search;
-	var S_ua = navigator.userAgent.toLowerCase();
+	var S_ua = S.ua;
 	
 	var set = {
 		head: 'html',	// this tag or class or id to set a global CSS settings class
@@ -44,6 +44,8 @@ S.m_ratio = SP.Mratio(); 		//monitor aspect Satio!
 		respond_delay : 200,
 		smart_resize : false,
 		smart_resize_speed : 200, // 350ms resize delay
+		
+		//w_scroll: 0,
 		
 		w_step_on : true,
 		w_step_class : 'w-xs w-xs w-sm w-md w-lg',	//for bootstrap: w_step_class = 'w-xs w-xs w-sm w-md w-lg';  (count = min: 1, max: 99+)
@@ -67,6 +69,7 @@ S.m_ratio = SP.Mratio(); 		//monitor aspect Satio!
 		S_Webmaster : false,		//Webmaster info view or hide true/false; WARNING this param is low speed respond function!
 		S_start_view : false,		//Webmaster info view if page loaded or hide true/false;
 		S_timers : false,			//Timer function on/off;
+		S_console_ie6: true,
 		
 		//css class names: .land, .port ...
 		landscape: 'land',
@@ -80,14 +83,20 @@ S.m_ratio = SP.Mratio(); 		//monitor aspect Satio!
 		ratio_prefix : 'r' 		// css class prefix for default screen ratio: 'ratio-' + value = 'ratio-16x9', 'ratio-4x3';
 	};
 
+	
+	
+	
 /* IE6 Concolse analog */		
 if(typeof console == "undefined"){
 	console = {};
 	$(document).ready(function() {
-		$('body').prepend('<div class="setpoint-con_log">console.log:<br /><div class="con_log"></div></div>');
-		
+		if(set.S_console_ie6){
+			$('body').prepend('<div class="setpoint-con_log">console.log:<br /><div class="con_log"></div></div>');
+		}
 		console.log = function(txt){
-			$('.setpoint-con_log .con_log').append('<p>'+txt+'</p>');
+			if(set.S_console_ie6){
+				$('.setpoint-con_log .con_log').append('<p>'+txt+'</p>');
+			}
 			return;
 		};
 	});
@@ -111,9 +120,9 @@ var SP = {
 				if (S_ua.search(/chrome/) != -1) return 'chrome';
 				if (S_ua.search(/webkit/) != -1) return 'webkit';
 				if (S_ua.search(/opera/) != -1) return 'opera';
-				if (S_ua.search(/ie 6/) != -1) return 'ie ie6 ie6-7';
-				if (S_ua.search(/ie 7/) != -1) return 'ie ie7 ie6-7';
-				if (S_ua.search(/ie 8/) != -1) return 'ie ie8';
+				if (S_ua.search(/ie 6/) != -1) return 'ie ie6 ie6-7 ie6-8';
+				if (S_ua.search(/ie 7/) != -1) return 'ie ie7 ie6-7 ie6-8';
+				if (S_ua.search(/ie 8/) != -1) return 'ie ie8 ie6-8';
 			var IE = '\v'=='v';
 				if(IE) return 'ie ie6-8';
 				if (S_ua.search(/msie/) != -1) return 'ie ie9plus';
@@ -136,7 +145,7 @@ var SP = {
 			}
 			ratio = ratio.toFixed(1);
 			
-			var px = ['0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9', '1.0', '1.1' , '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '2', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0'];
+			var px = ['0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9', '1.0', '1.1' , '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '2.0', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8', '2.9', '3.0'];
 				
 				for(pi = 0; pi < px.length; pi++){
 					if(ratio == px[pi]){
@@ -226,11 +235,13 @@ var SP = {
 				aspect_is = '16:9';
 				S_ratio = ratio_prefix+'16x9';
 			} else {
+				aspect = aspect.replace('.', 'x');
 				aspect_is = ratio_prefix+''+aspect;
+				S_ratio = aspect_is;
 			}
 			
 			if(set.S_Webmaster){
-				$('.setpoint-info .sp-aspect').text(aspect_is);
+				$('.setpoint-info .sp-aspect').text(aspect_is+' .'+S_ratio);
 			}
 			return S_ratio;
 		},
@@ -296,12 +307,23 @@ var SP = {
 
 window.SP = SP; //set to global =)
 
-
+SP.ww = ww;
 
 
    
-var points_init = function(set){
+var points_init = function(options){
+	
+	if(!set.S_console_ie6){
+		$('.setpoint-con_log').remove();
+	}
 
+	set.scroll_width = getScrollBarWidth();
+	if(!set.scroll_width > 0){
+		set.scroll_width = 0;
+	}
+	
+	
+	
 /* for Sespond */
 if(set.w_step_class != ''){
 	var w_step = {};
@@ -310,6 +332,11 @@ if(set.w_step_class != ''){
 	w_step.clas =  set.w_step_class.split(' ');
 	w_step.size =  set.w_step_size.split(' ');
 	
+	if(set.w_scroll > 0){
+		for(i=0; i < w_step.size.length; i++){
+			w_step.size[i] = w_step.size[i]-set.w_scroll;
+		}
+	}
 	//con_log(w_step.clas+':'+w_step.clas.length+' - '+w_step.clas[0]);
 	
 	if(w_step.clas.length == w_step.size.length){
@@ -325,6 +352,11 @@ if(set.h_step_on && set.h_step_class != ''){
 	h_step.clas =  set.h_step_class.split(' ');
 	h_step.size =  set.h_step_size.split(' ');
 	
+	if(set.w_scroll > 0){
+		for(i=0; i < h_step.size.length; i++){
+			h_step.size[i] = h_step.size[i]-set.w_scroll;
+		}
+	}
 	//con_log(h_step.clas+':'+h_step.clas.length+' - '+h_step.clas[0]);
 	
 	if(h_step.clas.length == h_step.size.length){
@@ -339,7 +371,12 @@ if(set.w_max_on && set.w_max_class != ''){
 	
 	w_max.clas =  set.w_max_class.split(' ');
 	w_max.size =  set.w_max_size.split(' ');
-
+	
+	if(set.w_scroll > 0){
+		for(i=0; i < w_max.size.length; i++){
+			w_max.size[i] = w_max.size[i]-set.w_scroll;
+		}
+	}
 	//con_log(w_max.clas+':'+w_max.clas.length+' - '+w_max.clas[0]);
 		
 	if(w_max.clas.length == w_max.size.length){
@@ -354,7 +391,13 @@ if(set.w_max_on && set.w_max_class != ''){
 	
 	w_min.clas =  set.w_min_class.split(' ');
 	w_min.size =  set.w_min_size.split(' ');
-
+	
+	if(set.w_scroll > 0){
+		for(i=0; i < w_min.size.length; i++){
+			w_min.size[i] = w_min.size[i]-set.w_scroll;
+		}
+	}
+		
 	if(w_min.clas.length == w_min.size.length){
 		w_min.num = w_min.size.length;
 	} else {
@@ -385,16 +428,21 @@ S_timer.finish = function(name){
  
 /* S WebMaster param */
 	if(set.S_Webmaster){
-
-			$('body').prepend('<p class="setpoint-info setpoint-info-inline"><b>SP</b><b> by inline studio</b><b><i>screen:</i></b><b><span class="ww"></span> x <span class="wh"></span></b><b><span class="w-w"></span> | <span class="w-h"></span></b> | <b><span class="w-max"></span> | <span class="w-min"></span></b><b><span class="prop"><i>html:</i></b><b><span class="dw"></span> x <span class="dh"></span></span></b><b><span class="resolut"><i>resolution:</i></b><b><span class="sw"></span> x <span class="sh"></span></span></b><b><i>aspect ratio:</i></b><b><span class="sp-aspect"></span></b><b><span class="sp-px"></span></b><b><span class="sp-dpi"></span></b><b><i>orientation:</i></b><b><span class="sp-or"></span></b><b><i>browser:</i></b><b><span class="sp-br"></span></b><b><span class="sp-d"></span></b><b><span class="sp-dt"></span></b></p>');
+	
+			$('body').prepend('<p class="setpoint-info setpoint-info-inline"><b>SP</b><b> by inline studio</b><b><i>screen:</i></b><b><span class="ww"></span> x <span class="wh"></span></b><b><span class="w-w"></span> | <span class="w-h"></span></b> | <b><span class="w-max"></span> | <span class="w-min"></span></b><b><span class="prop"><i>html:</i></b><b><span class="dw"></span> x <span class="dh"></span></span></b><b><span class="resolut"><i>resolution:</i></b><b><span class="sw"></span> x <span class="sh"></span></span></b><b><i>aspect ratio:</i></b><b><span class="sp-aspect"></span></b><b><i>px-ratio:</i><span class="sp-px"></span></b><b><span class="sp-dpi"></span></b><b><i>orientation:</i></b><b><span class="sp-or"></span></b><b><i>browser:</i></b><b><span class="sp-br"></span></b><b><span class="sp-d"></span></b><b><span class="sp-dt"></span></b><b><i>w-scroll:</i><span class="sp-scroll"></span></b><b class="sp-informer"></b></p>');
 			var dw = $(document).width();
 			var dh = $(document).height();
+			$('.sp-scroll').text(set.scroll_width+'px');
+			
 		if(!set.S_start_view){
 			$('.setpoint-info').hide();
 		}
 	}
+	
+	
 
-
+	
+	
 SP_active(set);
 };   
 
@@ -415,8 +463,8 @@ if($(set.body).is('.fluid')){
 	$(set.body).addClass(wsize);
 	 
 	$(window).resize(function(e){
-		ww = $(window).width();
-		if(ww < w_step.size[0]){
+		SP.ww = $(window).width();
+		if(SP.ww < w_step.size[0]){
 			wsize = w_step.clas[0];
 		} else {
 			wsize = 'fluid';
@@ -516,11 +564,41 @@ $(set.head).addClass(S.dpi); 	//set monitor pixel ratio
 	
 }; 
 
+
+function getScrollBarWidth () {
+  var inner = document.createElement('p');
+  inner.style.width = "100%";
+  inner.style.height = "200px";
+
+  var outer = document.createElement('div');
+  outer.style.position = "absolute";
+  outer.style.top = "0px";
+  outer.style.left = "0px";
+  outer.style.visibility = "hidden";
+  outer.style.width = "200px";
+  outer.style.height = "150px";
+  outer.style.overflow = "hidden";
+  outer.appendChild (inner);
+
+  document.body.appendChild (outer);
+  var w1 = inner.offsetWidth;
+  outer.style.overflow = 'scroll';
+  var w2 = inner.offsetWidth;
+  if (w1 == w2) w2 = outer.clientWidth;
+
+  document.body.removeChild (outer);
+
+  return (w1 - w2);
+};
+
+
+
 var count = 0;
+
 var SetPoint = function (options){
-	if(options != ""){
-		set = $.extend(set, options);
-	}
+	
+
+	
 	
 if(respondend){
 
@@ -532,6 +610,11 @@ if(respondend){
 
 	ww = $(window).width();
 	wh = $(window).height();
+	
+	if(ww == 0 ){
+	ww = $(document).width();
+	wh = $(document).height();
+	}
 
 		//aspect position
 		S_or = wh/ww;
@@ -556,13 +639,16 @@ if(respondend){
 				}
 		}
 		
+		
+		
 		if(set.w_step_on){
 			// compare browser size width at @media max-width and min-width
-			if(ww <= w_step.size[0]){
+			if(ww < w_step.size[0]){
 				wsize = w_step.clas[0];
 			} else {
+					var ni
 					for(i = 0; i < w_step.num; i++){
-						if(ww > w_step.size[i] && ww <= w_step.size[i+1]){
+						if(ww >= (w_step.size[i]) && ww <= (w_step.size[i+1]-1)){
 							wsize = w_step.clas[i+1];
 							break;
 						}
@@ -575,25 +661,21 @@ if(respondend){
 		 
 		 if(set.w_max_on){
 			if(w_max.num > 1){
-				if(ww <= w_max.size[0]){
-					w_max_size = w_max.clas[0];
-				} else {
-					w_max_size = w_max.clas[0];
+					w_max_size = '';
 					for(m = 0; m < w_max.num; m++){
-						if(ww <= w_max.size[m+1]){
-							w_max_size = w_max.clas[m+1];
-							break;
-						} else {
-							w_max_size = '';
-						}
+						if(w_max.size[m] >= ww){
+							w_max_size += ' '+w_max.clas[m];
+						} 
 					}
-				}
 			} else {
 				if(ww <= w_max.size[0]){
 					w_max_size = w_max.clas[0];
-				} else { 
-					w_max_size = false;
-				}
+					/* w_max_size = '';
+					for(m = 0; m < w_max.num; m++){
+							w_max_size += ' '+w_max.clas[m];
+							break;
+					} */
+				} 
 			}
 		} else {
 			w_max_size = '';
@@ -605,21 +687,17 @@ if(respondend){
 				if(ww > w_min.size[0]){
 					w_min_size = w_min.clas[0];
 					for(q = 0; q < w_min.num; q++){
-						if(ww > w_min.size[q+1]){
+						if(ww >= w_min.size[q+1]){
 							w_min_size += ' '+w_min.clas[q+1];
 							break;
-						} else {
-							//w_min_size = '';
 						}
 					}
 				} else {
 					w_min_size = '';
 				}
 			} else {
-				if(ww > w_min.size[0]){
+				if(ww >= w_min.size[0]){
 					w_min_size = w_min.clas[0];
-				} else { 
-					//w_min_size = false;
 				}
 			}
 		} else {
@@ -695,7 +773,7 @@ if(respondend){
 				}
 			}
 		 }
-	
+	SP.ww = ww;
 	
 	/* S WebMaster param*/
 	if(set.S_Webmaster){
@@ -704,11 +782,12 @@ if(respondend){
 		$('.setpoint-info .w-w').text(wsize);
 		$('.setpoint-info .w-h').text(hsize);
 		$('.setpoint-info .ww').text(ww);
+		
 		$('.setpoint-info .wh').text(wh);
 		$('.setpoint-info .dw').text(dwsize);
 		$('.setpoint-info .dh').text(dhsize);
-		$('.setpoint-info .sw').text(swsize);
-		$('.setpoint-info .sh').text(shsize);
+		$('.setpoint-info .sw').text(sw);
+		$('.setpoint-info .sh').text(sh);
 		$('.setpoint-info .w-max').text(w_max_size);
 		$('.setpoint-info .w-min').text(w_min_size);
 		
