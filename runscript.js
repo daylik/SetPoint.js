@@ -29,29 +29,30 @@ SP.run({
 		smart_resize_speed : 100, 	// 200ms resize delay
 		
 		w_step_on : true,
-		w_step_class : 'w-min w-xs w-sm w-md w-lg w-hd',	//for bootstrap: w_step_class = 'w-xs w-xs w-sm w-md w-lg';  (count = min: 1, max: 99+)
-		w_step_size : '240 478 768 992 1200 1980',		//for bootstrap: w_step_size = '478 768 992 1200 1980'; (count = min: 1, max: 99+)
+		w_step_class : 'w-xs w-xs w-sm w-md w-lg',	//for bootstrap: w_step_class = 'w-xs w-xs w-sm w-md w-lg';  (count = min: 1, max: 99+)
+		w_step_size : '478 768 992 1200 1980',		//for bootstrap: w_step_size = '478 768 992 1200 1980'; (count = min: 1, max: 99+)
 		
 		w_max_on : true,
 		w_max_class : 'w-max478 w-max767 w-max992',	// 'w-max478 w-max767 w-max992'; (count = min: 0, max: 99+)
 		w_max_size : '478 767 992',					// '478 767 992' = CSS: @media (max-width: 478), @media (max-width: 767) ...
 		
 		w_min_on : true,
-		w_min_class : 'w-min768 w-min992',	// 'w-min768 w-min992'; (count =  min: 0, max: 99+)
-		w_min_size : '768 992',				// '768 992' = CSS: @media (min-width: 768), @media (min-width: 992) ...
+		w_min_class : 'w-min478 w-min768 w-min992',	// 'w-min768 w-min992'; (count =  min: 0, max: 99+)
+		w_min_size : '478 768 992',				// '768 992' = CSS: @media (min-width: 768), @media (min-width: 992) ...
 		
-		h_step_on : true,				//if need to listen a browser height - $(window).height();
+		h_step_on : false,				//if need to listen a browser height - $(window).height();
 		h_step_class : 'h-min h-xs h-sm h-md h-max', //(count =  min: 0, max: 99+)
 		h_step_size : '240 478 768 992 1200',
 		
 		S_Webmaster : true,		//Webmaster info view or hide true/false; WARNING this param is low speed respond function!
 		S_start_view : true,	//Webmaster info view if page loaded or hide true/false;
-		S_timers : true,		//Timer function on/off;
+		S_timers : false,		//Timer function on/off;
+		S_console_ie6: false,
 		
 		//CSS Class Names: .land, .port ...
 		landscape: 'land',
 		portriet: 'port',
-		blackberry: 'blackberry',
+		blackberry: 'bb',
 		iemobile: 'winphone',
 		firefox: 'ffox',
 		windows: 'windows',
@@ -60,14 +61,5 @@ SP.run({
 		ratio_prefix : 'r' 		// css class prefix for default screen ratio: 'ratio-' + value = 'ratio-16x9', 'ratio-4x3';
 });
 
-
-/* 
-function myFUNC(){
-	SP.log('call myFUNC');
-}
-
-//SP API Smart Resize Function!
-SP.SmartResize(myFUNC); 
-*/
-
+//alert(S.ua);
 });
