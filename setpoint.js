@@ -9,7 +9,7 @@ GLOBAL vars SP and functions:
 S.device = SP.GetDevice();
 S.device_type = SP.GetDeviceType();
 S.browser = SP.GetBrowser();
-S.m_ratio = SP.Mratio(); 		//monitor aspect Satio!
+S.m_ratio = SP.Mratio(); 		//monitor aspect Ratio!
 
 */
 
