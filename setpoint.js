@@ -1,7 +1,7 @@
 /* SP (Really Use Style HTML) v.1 - from Russia with love.
 Script created 07.03.2015
 Copyright Meshaev Oleg 2015
-vk.com/dayll
+vk.com/day_like
 
 This script created a css @media classes!
 GLOBAL vars SP and functions:
